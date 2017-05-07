@@ -70,27 +70,27 @@ This is the repository to assess the environmental exposure estimate on the indi
 <tr class="odd">
 <td align="center">2564</td>
 <td align="left">2015-01-05</td>
-<td align="left">湖北省武汉市汉阳区界牌中湾31号</td>
+<td align="left">湖北省武汉市汉阳区xx路xx号</td>
 </tr>
 <tr class="even">
 <td align="center">2563</td>
 <td align="left">2015-01-04</td>
-<td align="left">湖北省武汉市江汉区满春路38号-2号</td>
+<td align="left">湖北省武汉市江汉区xx路xx号</td>
 </tr>
 <tr class="odd">
 <td align="center">2562</td>
 <td align="left">2015-01-04</td>
-<td align="left">湖北省武汉市硚口区凌霄小巷2号2楼1号</td>
+<td align="left">湖北省武汉市硚口区xx路xx号</td>
 </tr>
 <tr class="even">
 <td align="center">2561</td>
 <td align="left">2015-01-03</td>
-<td align="left">湖北省武汉市江岸区淌湖二村111号</td>
+<td align="left">湖北省武汉市江岸区xx路xx号</td>
 </tr>
 <tr class="odd">
 <td align="center">2560</td>
 <td align="left">2015-01-02</td>
-<td align="left">湖北省武汉市青山区鄂洲路14号</td>
+<td align="left">湖北省武汉市青山区xx路xx号</td>
 </tr>
 </tbody>
 </table>
