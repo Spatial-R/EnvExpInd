@@ -1,8 +1,12 @@
 # Environmental-Exposure-Estimate
 This is the repository to assess the environmental exposure estimate on the individual level.
 
+--------------------------------------------------------------------------------------
+
 伯特兰.罗素：
 我们的确在思考，但是却思考地如此糟糕，以至于我们时常感觉，也许我们不思考反而更好！
+
+---------------------------------------------------------------------------------
 
 ### 前言（我为什么要做这个事情？）
 
@@ -14,6 +18,8 @@ This is the repository to assess the environmental exposure estimate on the indi
 
 已有众多研究从生态学角度（时间序列研究）探讨空气污染或是其他环境暴露对健康结局的影响，同时从个体水平暴露着手研究环境暴露对健康的影响也悄然越来越多，那如何获得个体水平的环境因子暴露量呢？今年年初，帮同事处理了一批数据(空气污染个体评估)，今日兴致使然，将代码整理成若干函数，若各位看官需要，请在公众号(SpatialR)里与我联系。
 
+---------------------------------------
+
 ### 数据类型
 
 若需获得个体空气污染暴露量，需要三类数据：**监测站点信息**、**空气污染数据**、**个体信息**
@@ -24,6 +30,8 @@ This is the repository to assess the environmental exposure estimate on the indi
 
 -   个体信息：包括个体**详细地址信息**和**个体时间信息**(如发病时间、死亡时间、怀孕时间等)。
 
+---------------------------------
+
 ### 整体思路
 
 1.  根据监测站点信息地址信息和个体详细地址信息获取其对应的经纬度信息。
@@ -33,6 +41,9 @@ This is the repository to assess the environmental exposure estimate on the indi
 3.  根据每个个体的时间信息和需评估的时长获得每个个体的评估时长。
 
 4.  根据第二步和第三步获取的信息，获得每个个体的污染物暴露量。
+
+
+----------------------------
 
 ### 第一步：读取相关数据
 
@@ -1017,9 +1028,9 @@ This is the repository to assess the environmental exposure estimate on the indi
 </tbody>
 </table>
 
-
+-----------------------------------
 
 ### 结语
 此处应该有掌声，哈哈。
 目前此处只纳入了几种较为简单的评估方法，更为精细的评估如结合土地回归模型或个体出行模式，往往会让模型变得更为复杂，后续若有时间，我会将结合个体出行模式的函数整理出来，进一步丰富该处内容。
-如果你对于这个模型有啥建议，请在[此处]（https://github.com/Spatial-R/Environmental-Exposure-Estimate/issues）提交你的意见，非常感谢。
+如果你对于这个模型有啥建议，请在[此处](https://github.com/Spatial-R/Environmental-Exposure-Estimate/issues)提交你的意见，非常感谢。
