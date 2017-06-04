@@ -1,5 +1,5 @@
-# Environmental-Exposure-Estimate
-**EnvExpInd** is a package to estimate the environmental exposure on the individual level.
+# Environmental-Exposure-Estimation
+**EnvExpInd** is a package to estimate the environmental exposure on the individual level. If you have found any bugs, please set up an issue [here](https://github.com/Spatial-R/Environmental-Exposure-Estimate/issues)
 
 ### 数据类型
 
