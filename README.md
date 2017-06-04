@@ -1,11 +1,11 @@
 ## Environmental-Exposure-Estimation
-**EnvExpInd** is a package to estimate the environmental exposure on the individual level. If you have found any bugs, please set up an issue [here](https://github.com/Spatial-R/Environmental-Exposure-Estimate/issues)
+**EnvExpInd** is a package to estimate the environmental exposure on the individual level. If you have found any bugs, please set up an issue [here](https://github.com/Spatial-R/Environmental-Exposure-Estimate/issues).
 
 -------------------------------------------------------------------------------------------
 
 ### 数据类型
 
-若需通过环境常规监测站点数据计算个体环境暴露量，则至少需要监测站点环境数据和样本个体信息，以空气污染为例，一般需要**监测站点信息**、**空气污染数据**、**个体信息**
+若需通过环境常规监测站点数据计算个体环境暴露量，则至少需要监测站点环境数据和样本个体信息，以空气污染为例，一般需要**监测站点信息**、**空气污染数据**、**个体信息**。
 
 -   监测站点信息：包括**监测站点名称**和监测站点**详细地址信息**。
 
@@ -29,7 +29,7 @@
 
 #### 安装
 
-程序包现如今在github上，所以需要用devtools::install\_github进行安装
+程序包现如今在github上，所以需要用devtools::install\_github进行安装:
 
     devtools::install_github("Spatial-R/EnvExpInd")
 
@@ -363,8 +363,7 @@
 
 1.  精细型
 
-精细型此处只提供两种，一种是反距离插值，一种是克里金插值。这两种类型都需调用**gstat**这个程序包，所以，你懂得：install\_packages("gstat")
-反距离插值可用'exposure\_estimate\_idw'函数加以实现，示例如下：
+精细型此处只提供两种，一种是反距离插值，一种是克里金插值。这两种插值方法都是基于**gstat**包中相关函数来实现。其中基于反距离插值来评估个体的空气污染暴露可用'exposure\_estimate\_idw'函数加以实现，示例如下：
 
     pollutant_data_tem_idw <- merge(pollutant_data_tem,site_data[,c(1,3,4)],by.x = "site.name",by.y = "site", all.x = T)
 
@@ -469,7 +468,7 @@
 </tbody>
 </table>
 
-克里金插值可用'exposure\_estimate\_krige'加以实现，不过采用克里金插值前，你首先要定义半变异函数。
+克里金插值可用'exposure\_estimate\_krige'加以实现，不过采用克里金插值前，你需先定义半变异函数。
 
     example.date <- range(pollutant_data_tem$date)[2]
     test.pollutant <- filter(pollutant_data_tem,date == example.date)[,c(2,5)]
@@ -580,7 +579,3 @@
 </tr>
 </tbody>
 </table>
------------------------------------------------------------------------------------
-
-
-若您觉得该包有bug，请在[此处](https://github.com/Spatial-R/Environmental-Exposure-Estimate/issues)提交你的意见，非常感谢。
