@@ -1,9 +1,9 @@
 # Environmental-Exposure-Estimate
-**EnvExpInd** is a small package to estimate the environmental exposure on the individual level.
+**EnvExpInd** is a package to estimate the environmental exposure on the individual level.
 
 ### 数据类型
 
-若需通过环境常规监测站点数据计算个体环境暴露量，则至少需要监测站点环境数据和样本个体信息，以空气你污染为例，一般需要**监测站点信息**、**空气污染数据**、**个体信息**
+若需通过环境常规监测站点数据计算个体环境暴露量，则至少需要监测站点环境数据和样本个体信息，以空气污染为例，一般需要**监测站点信息**、**空气污染数据**、**个体信息**
 
 -   监测站点信息：包括**监测站点名称**和监测站点**详细地址信息**。
 
@@ -568,9 +568,7 @@
 </tr>
 </tbody>
 </table>
------------------------------------
+-----------------------------------------------------------------------------------
 
-### 结语
-此处应该有掌声，哈哈。
-目前此处只纳入了几种较为简单的评估方法，更为精细的评估如结合土地回归模型或个体出行模式，往往会让模型变得更为复杂，后续若有时间，我会将结合个体出行模式的函数整理出来，进一步丰富该处内容。
-如果你对于这个模型有啥建议，请在[此处](https://github.com/Spatial-R/Environmental-Exposure-Estimate/issues)提交你的意见，非常感谢。
+
+若您觉得该包有bug，请在[此处](https://github.com/Spatial-R/Environmental-Exposure-Estimate/issues)提交你的意见，非常感谢。
