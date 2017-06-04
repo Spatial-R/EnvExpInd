@@ -10,6 +10,7 @@
 ###' @param  pollutant_date varibale name which includes the date infromation for pollutant
 ###' @param  pollutant_name which pollutant need to be estimated
 ###' @examples
+###' \dontrun{
 ###' expoure_estimate_simple(
 ###'     individual_data = individual_data_tem,
 ###'    individual_id = "id",
@@ -20,8 +21,10 @@
 ###'    pollutant_date = "date",
 ###'    pollutant_name = c("PM10","PM2.5"),
 ###'    estimate_interval = c(0:30))
-###' @return aa
-###' @author Bing Zhang, \url{www.spatial-r.com}
+###'    }
+###' @return a list. every dataframe in the list was with the first column representing the individual id, the remaining columns represent the exposure estimation
+###' in different days.
+###' @author Bing Zhang, \url{https://github.com/Spatial-R/EnvExpInd}
 
 
 expoure_estimate_simple <- function(individual_data,

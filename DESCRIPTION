@@ -1,7 +1,7 @@
 Package: EnvExpInd
 Type: Package
 Title: R package to estimate the environmental exposure on the individual level
-Imports: gstat,stringi,RCurl
+Imports: gstat,RCurl,dplyr,stringi,sp
 Version: 0.1.0
 Author: Bing Zhang
 Maintainer: Bing Zhang <zhangbing4502431@outlook.com>

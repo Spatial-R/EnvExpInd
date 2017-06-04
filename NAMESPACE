@@ -1,3 +1,6 @@
 exportPattern("^[[:alpha:]]+")
 importFrom("RCurl","getURL")
 import(gstat)
+import(dplyr)
+import(sp)
+import(stringi)

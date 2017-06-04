@@ -1,3 +1,26 @@
+##' @title  get the refrence site for every sample
+##' @param  individual_data data.frame from the geo_latlon function
+##' @param  individual_lat character,varibale includes the latitude of the idividual
+##' @param  individual_lon character,varibale includes longtitude value of the idividual
+##' @param  individual_id  character, varibale includes the unique id for each individual
+##' @param  site_data  data.frame from the geo_latlon function
+##' @param  site_lat  character varibale includes the latitude value of the site
+##' @param  site_lon  character varibale includes the longtitude value of the site
+##' @param  site_id   character varibale includes the id for each site
+##' @examples
+##' \dontrun{
+##' get_refrence_id_simple(
+##'      individual_data = individual_data_tem,
+##'      individual_lat = "lat",
+##'      individual_lon = "lon",
+##'      individual_id = "id",
+##'      site_data = site_data,
+##'      site_lon = "lon",
+##'      site_id = "site")
+##' }
+##' @return refrence_id for each individual
+##' @author Bing Zhang, \url{https://github.com/Spatial-R/EnvExpInd}
+
 get_refrence_id_simple <- function(individual_data,
                                    individual_lat,
                                    individual_lon,
@@ -6,25 +29,6 @@ get_refrence_id_simple <- function(individual_data,
                                    site_lat,
                                    site_lon,
                                    site_id){
-
-  ### @ individual_data : the individual dataset from the geo_latlon function
-  ### @ individual_lat : varibale which includes the latitude value of the idividual
-  ### @ individual_lon : varibale which includes longtitude value of the idividual
-  ### @ individual_id  : varibale which includes the id for each individual, fox example: 1,2,3,4
-
-  ### @ site_data : the site dataset from the geo_latlon function
-  ### @ site_lat : varibale which includes the latitude value of the site
-  ### @ site_lon : varibale which includes the longtitude value of the site
-  ### @ site_id  : varibale which includes the id for each site, fox example: site name
-
-  #  individual_data = individual_data_tem;
-  #  individual_lat = "lat";
-  #  individual_lon = "lon";
-  #  individual_id = "编号";
-  #  site_data = site_data;
-  #  site_lat = "lat";
-  #  site_lon = "lon";
-  #  site_id = "site"
 
 
   if (any(is.na(individual_data[,individual_lat]))){

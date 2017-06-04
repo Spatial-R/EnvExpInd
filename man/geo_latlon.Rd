@@ -13,6 +13,9 @@ geo_latlon(data, add_var = "address", api_key = "")
 
 \item{api_key:}{your key for the baidumap api seeing: \url{http://lbsyun.baidu.com/index.php?title=webapi/guide/webservice-geocoding}}
 }
+\value{
+two clomuns (lon and lat) was added into the origin data.frame
+}
 \description{
 convert the detailed address into the longitude and latitude based on the Baidumap api
 }
@@ -20,4 +23,7 @@ convert the detailed address into the longitude and latitude based on the Baidum
 \dontrun{
  geo_latlon(wuhan.sem,add_var = "add",api_key = "sksksksksksk")
 }
+}
+\author{
+Bing Zhang, \url{https://github.com/Spatial-R/EnvExpInd}
 }

@@ -29,12 +29,14 @@ expoure_estimate_simple(individual_data, individual_id, refrence_id,
 \item{estimate_interval}{how long do you need to measure, for example: 0:30}
 }
 \value{
-aa
+a list. every dataframe in the list was with the first column representing the individual id, the remaining columns represent the exposure estimation
+in different days.
 }
 \description{
 using the nearest surveillance site as the refrence site to estimate the environment exposure.
 }
 \examples{
+\dontrun{
 expoure_estimate_simple(
     individual_data = individual_data_tem,
    individual_id = "id",
@@ -45,7 +47,8 @@ expoure_estimate_simple(
    pollutant_date = "date",
    pollutant_name = c("PM10","PM2.5"),
    estimate_interval = c(0:30))
+   }
 }
 \author{
-Bing Zhang, \url{www.spatial-r.com}
+Bing Zhang, \url{https://github.com/Spatial-R/EnvExpInd}
 }

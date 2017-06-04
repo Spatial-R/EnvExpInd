@@ -7,11 +7,11 @@
 ##' \dontrun{
 ##'  geo_latlon(wuhan.sem,add_var = "add",api_key = "sksksksksksk")
 ##' }
-
+##' @return two clomuns (lon and lat) was added into the origin data.frame
+##' @author Bing Zhang, \url{https://github.com/Spatial-R/EnvExpInd}
 
 geo_latlon <- function(data,add_var="address",api_key = ""){
   dat.tem <- data
-  dat.tem[,add_var] <- stri_replace_all_charclass(dat.tem[,add_var], "\\p{WHITE_SPACE}", "")
   url.base <- "http://api.map.baidu.com/geocoder/v2/?ak="
   url.true <- paste(url.base,api_key,"&callback=renderOption&output=xml&address=",sep = "")
   dat.list <- lapply(1:nrow(dat.tem), function(id){
