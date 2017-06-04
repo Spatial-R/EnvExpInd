@@ -81,6 +81,7 @@ exposure_estimate_idw <- function(individual_data,
       pollutant.result <- bind_cols(pollutant.list)
       names(pollutant.result) <- paste("day.",estimate_interval,sep = "")
       pollutant.result$id <-  individual_data[data.id,"individual_id"]
+      pollutant.result <- pollutant.result[,c("id", paste("day.",estimate_interval,sep = ""))]
       return(pollutant.result)
     })
     result.final[[i]] <- bind_rows(tem.list);
