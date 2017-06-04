@@ -368,46 +368,47 @@
                                           pollutant_name = c("PM10","SO2"),
                                           estimate_interval = c(0:1))  
 
+   
     kable(head(exposure.idw$PM10),digits = 1)   #### PM10 estimation
 
 <table>
 <thead>
 <tr class="header">
+<th align="right">id</th>
 <th align="right">day.0</th>
 <th align="right">day.1</th>
-<th align="right">id</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
+<td align="right">2564</td>
 <td align="right">196.1</td>
 <td align="right">198.6</td>
-<td align="right">2564</td>
 </tr>
 <tr class="even">
+<td align="right">2563</td>
 <td align="right">220.2</td>
 <td align="right">198.6</td>
-<td align="right">2563</td>
 </tr>
 <tr class="odd">
+<td align="right">2562</td>
 <td align="right">227.0</td>
 <td align="right">194.7</td>
-<td align="right">2562</td>
 </tr>
 <tr class="even">
+<td align="right">2561</td>
 <td align="right">191.0</td>
 <td align="right">224.1</td>
-<td align="right">2561</td>
 </tr>
 <tr class="odd">
+<td align="right">2560</td>
 <td align="right">141.6</td>
 <td align="right">186.6</td>
-<td align="right">2560</td>
 </tr>
 <tr class="even">
+<td align="right">2559</td>
 <td align="right">136.1</td>
 <td align="right">176.1</td>
-<td align="right">2559</td>
 </tr>
 </tbody>
 </table>
@@ -417,41 +418,41 @@
 <table>
 <thead>
 <tr class="header">
+<th align="right">id</th>
 <th align="right">day.0</th>
 <th align="right">day.1</th>
-<th align="right">id</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
+<td align="right">2564</td>
 <td align="right">52.9</td>
 <td align="right">33.1</td>
-<td align="right">2564</td>
 </tr>
 <tr class="even">
+<td align="right">2563</td>
 <td align="right">72.1</td>
 <td align="right">53.0</td>
-<td align="right">2563</td>
 </tr>
 <tr class="odd">
+<td align="right">2562</td>
 <td align="right">73.3</td>
 <td align="right">53.2</td>
-<td align="right">2562</td>
 </tr>
 <tr class="even">
+<td align="right">2561</td>
 <td align="right">50.8</td>
 <td align="right">81.0</td>
-<td align="right">2561</td>
 </tr>
 <tr class="odd">
+<td align="right">2560</td>
 <td align="right">58.7</td>
 <td align="right">44.5</td>
-<td align="right">2560</td>
 </tr>
 <tr class="even">
+<td align="right">2559</td>
 <td align="right">51.9</td>
 <td align="right">44.0</td>
-<td align="right">2559</td>
 </tr>
 </tbody>
 </table>
@@ -478,46 +479,48 @@
                                          krige_model = m,
                                          nmax = 7,
                                          krige_method = "med")
+
+
     kable(head(estimate.krige$PM10),digits = 1)   #### PM10 estimation
 
 <table>
 <thead>
 <tr class="header">
+<th align="right">id</th>
 <th align="right">day.0</th>
 <th align="right">day.1</th>
-<th align="right">id</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
+<td align="right">2564</td>
 <td align="right">194</td>
 <td align="right">198</td>
-<td align="right">2564</td>
 </tr>
 <tr class="even">
+<td align="right">2563</td>
 <td align="right">220</td>
 <td align="right">198</td>
-<td align="right">2563</td>
 </tr>
 <tr class="odd">
+<td align="right">2562</td>
 <td align="right">220</td>
 <td align="right">194</td>
-<td align="right">2562</td>
 </tr>
 <tr class="even">
+<td align="right">2561</td>
 <td align="right">192</td>
 <td align="right">220</td>
-<td align="right">2561</td>
 </tr>
 <tr class="odd">
+<td align="right">2560</td>
 <td align="right">136</td>
 <td align="right">178</td>
-<td align="right">2560</td>
 </tr>
 <tr class="even">
+<td align="right">2559</td>
 <td align="right">136</td>
 <td align="right">178</td>
-<td align="right">2559</td>
 </tr>
 </tbody>
 </table>
@@ -527,45 +530,44 @@
 <table>
 <thead>
 <tr class="header">
-<th align="left">id</th>
-<th align="left">day.0</th>
-<th align="left">day.1</th>
+<th align="right">id</th>
+<th align="right">day.0</th>
+<th align="right">day.1</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">2564</td>
-<td align="left">27</td>
-<td align="left">47</td>
+<td align="right">2564</td>
+<td align="right">58.0</td>
+<td align="right">35.0</td>
 </tr>
 <tr class="even">
-<td align="left">2563</td>
-<td align="left">47</td>
-<td align="left">60</td>
+<td align="right">2563</td>
+<td align="right">82.0</td>
+<td align="right">58.0</td>
 </tr>
 <tr class="odd">
-<td align="left">2562</td>
-<td align="left">47</td>
-<td align="left">60</td>
+<td align="right">2562</td>
+<td align="right">80.0</td>
+<td align="right">58.0</td>
 </tr>
 <tr class="even">
-<td align="left">2561</td>
-<td align="left">82</td>
-<td align="left">52</td>
+<td align="right">2561</td>
+<td align="right">46.7</td>
+<td align="right">82.0</td>
 </tr>
 <tr class="odd">
-<td align="left">2560</td>
-<td align="left">54</td>
-<td align="left">72</td>
+<td align="right">2560</td>
+<td align="right">52.0</td>
+<td align="right">46.7</td>
 </tr>
 <tr class="even">
-<td align="left">2559</td>
-<td align="left">44</td>
-<td align="left">52</td>
+<td align="right">2559</td>
+<td align="right">52.0</td>
+<td align="right">46.7</td>
 </tr>
 </tbody>
 </table>
-
 -----------------------------------
 
 ### 结语
