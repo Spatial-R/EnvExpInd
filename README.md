@@ -38,11 +38,12 @@
 ### 第一步：读取相关数据
 
 安装好程序包后，可以直接用该包自带的'envid'数据集进行测试，其包含三类数据，分别为空气污染数据(pollutant.csv)、监测站点数据(site.csv)和样本数据(patient.csv)。为保证后续数据处理过程能顺利进行，需要空气污染数据库和样本数据库中的日期变量转换成日期格式(默认为字符串)。
-
+    library(sp);library(gstat);library(EnvExpInd)
     data("envind")
     individual_data_tem$date <- as.Date(individual_data_tem$date);
     pollutant_data$date <- as.Date(pollutant_data$date)
-
+    pollutant_data_tem <- pollutant_data
+    
 样本数据集individual\_data\_tem包含**病例编号**(id,编号不重复)、**病例日期**（date,格式为2014-10-20）和详细地址信息(address,
 尽可能详细)。具体格式如下：
 
@@ -473,7 +474,7 @@
     example.date <- range(pollutant_data_tem$date)[2]
     test.pollutant <- filter(pollutant_data_tem,date == example.date)[,c(2,5)]
     test.pollutant <- merge(test.pollutant,site_data,by.x = "site.name",by.y = "site")
-    coordinates(test.pollutant) = ~lat + lon
+    coordinates(test.pollutant) <- ~lat + lon
     m <- fit.variogram(variogram(PM10~1, test.pollutant), vgm(1, "Sph", 200, 1))
 
     estimate.krige <- exposure_estimate_krige(individual_data = individual_data_tem,
