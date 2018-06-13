@@ -39,7 +39,9 @@
 
 安装好程序包后，可以直接用该包自带的'envid'数据集进行测试，其包含三类数据，分别为空气污染数据(pollutant.csv)、监测站点数据(site.csv)和样本数据(patient.csv)。为保证后续数据处理过程能顺利进行，需要空气污染数据库和样本数据库中的日期变量转换成日期格式(默认为字符串)。
 
-     library(sp);library(gstat);library(EnvExpInd)
+     library(sp);
+     library(gstat);
+     library(EnvExpInd)
      data("envind")
      individual_data_tem$date <- as.Date(individual_data_tem$date);
      pollutant_data$date <- as.Date(pollutant_data$date)
@@ -582,3 +584,10 @@
 </tr>
 </tbody>
 </table>
+
+
+### Paper published
+
+Li Wu, Lei Jin, Tingming Shi, Bing Zhang, et.al. Association between ambient particulate matter exposure and semen quality in Wuhan, China, Environment International, 98, 2017,219-228.
+
+Tao Liu, Min Kang, Bing Zhang, et.al. Independent and interactive effects of ambient temperature and absolute humidity on the risks of avian influenza A(H7N9) infection in China. Science of The Total Environment, 2018, 619-620: 1358-1365.
