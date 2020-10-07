@@ -3,7 +3,7 @@
 **EnvExpInd** is a package to estimate the environmental exposure on the individual level. Compared with the traditional way which uses the average concentration of the whole monitoring sites, the `EnvExpInd` package has taken the **spatial heterogeneity** into consideration and obtained a more accurate assessment of environmental exposure on the individual level. 
 If you have found any bugs, please set up an issue [here](https://github.com/Spatial-R/EnvExpInd/issues).
 
-## installation
+## Installation
 devtools::install_github("Spatial-R/EnvExpInd/")
 
 
