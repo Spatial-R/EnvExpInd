@@ -2,43 +2,52 @@
 % Please edit documentation in R/expoure_estimate_simple.R
 \name{expoure_estimate_simple}
 \alias{expoure_estimate_simple}
-\title{estimate the environmental exposure using the simple method}
+\title{assess the pollutant exposure using the simplest method}
 \usage{
-expoure_estimate_simple(individual_data, individual_id, refrence_id,
-  exposure_date, pollutant_data, pollutant_site = "site",
-  pollutant_date = "date", pollutant_name = c("pm10", "so2"),
-  estimate_interval)
+expoure_estimate_simple(
+  individual_data,
+  individual_id,
+  refrence_id,
+  exposure_date,
+  pollutant_data,
+  pollutant_site = "site",
+  pollutant_date = "date",
+  pollutant_name = c("pm10", "so2"),
+  estimate_interval
+)
 }
 \arguments{
-\item{individual_data}{the dataset which inludes the refrence id, indi_id and exposure_date}
+\item{individual_data}{data.frame, inludes the refrence id, indi_id and exposure_date}
 
-\item{individual_id}{varibale which includes the id for each individual, fox example: 1,2,3,4}
+\item{individual_id}{character, variable name in the individual_data, which represents the unique id for each individual}
 
-\item{refrence_id}{varibale which tell you the target site id}
+\item{refrence_id}{character, varibale name in the individual_data, which represents the nearest surveillance site for each individual}
 
-\item{exposure_date}{varibale which has the date information}
+\item{exposure_date}{character, varibale name in the individual_data, which represents the start date to estimate the environment exposure}
 
-\item{pollutant_data}{the dataset which indludes the pollutant and site informatin}
+\item{pollutant_data}{data.frame, contains the pollutant and site informatin. One column represents the site information and other columns represent the concentration of pollutants}
 
-\item{pollutant_site}{varibale name which includes the site infromation}
+\item{pollutant_site}{character, varibale name in the pollutant_data, which represents the site information}
 
-\item{pollutant_date}{varibale name which includes the date infromation for pollutant}
+\item{pollutant_date}{character, varibale name in the pollutant_data, which represents the surveillance date for pollutant concentration}
 
-\item{pollutant_name}{which pollutant need to be estimated}
+\item{pollutant_name}{vactor, varibale names in the pollutant_data, which represent the name of the target pollutants to be estimated}
 
-\item{estimate_interval}{how long do you need to measure, for example: 0:30}
+\item{estimate_interval}{continue numeric vector, the estimation period, for example: 0:30, for each individual we estimate the environment exposure ranging from the exposure_date to exposure_date + 30 days}
 }
 \value{
 a list. every dataframe in the list was with the first column representing the individual id, the remaining columns represent the exposure estimation
 in different days.
 }
 \description{
-using the nearest surveillance site as the refrence site to estimate the environment exposure.
+using the nearest surveillance site as the refrence site to estimate the pollutant exposure.
 }
 \examples{
 \dontrun{
+library(EnvExpInd)
+data(envind)
 expoure_estimate_simple(
-    individual_data = individual_data_tem,
+   individual_data = individual_data_tem,
    individual_id = "id",
    refrence_id = "refrence_id",
    exposure_date = "date",

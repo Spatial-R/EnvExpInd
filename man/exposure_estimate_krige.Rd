@@ -2,52 +2,70 @@
 % Please edit documentation in R/exposure_estimate_krige.R
 \name{exposure_estimate_krige}
 \alias{exposure_estimate_krige}
-\title{estimate the environmental exposure using the kringe method}
+\title{assess the pollutant exposure using the kringe method}
 \usage{
-exposure_estimate_krige(individual_data, individual_id, exposure_date,
-  individual_lat, individual_lon, pollutant_data, pollutant_date = "date",
-  pollutant_site_lat, pollutant_site_lon, pollutant_name = c("pm10", "so2"),
-  estimate_interval = c(0:30), krige_model, nmax = 7,
-  krige_method = "med")
+exposure_estimate_krige(
+  individual_data,
+  individual_id,
+  exposure_date,
+  individual_lat,
+  individual_lon,
+  pollutant_data,
+  pollutant_date = "date",
+  pollutant_site_lat,
+  pollutant_site_lon,
+  pollutant_name = c("pm10", "so2"),
+  estimate_interval = c(0:30),
+  krige_model,
+  nmax = 7,
+  krige_method = "med"
+)
 }
 \arguments{
-\item{individual_data}{data.frame includes the refrence id, individual_id and exposure_date}
+\item{individual_data}{data.frame, contains the refrence id, individual_id and exposure_date}
 
-\item{individual_id}{character, represents the unique id for each individual}
+\item{individual_id}{character, varibale name in individual_data, represents the unique id for each individual}
 
-\item{exposure_date}{character, represents the date information}
+\item{exposure_date}{character, varibale name in individual_data, which represents the start date to estimate the environment exposure}
 
-\item{pollutant_data}{data.frame which indludes the pollutant and site informatin}
+\item{individual_lat}{character, varibale name in individual_data, represents the latitude information of each idividual}
+
+\item{individual_lon}{character, varibale name in individual_data, represents the longtitude information of each idividual}
+
+\item{pollutant_data}{data.frame, contains the pollutant and site informatin. One column represents the site information and other columns represent the concentration of pollutants}
 
 \item{pollutant_date}{character,varibale name represents the date infromation for the air pollutant dataset}
 
-\item{pollutant_name}{character, ollutant name in the pollutant_data need to be estimated}
+\item{pollutant_site_lat}{character, varibale name in pollutant_data, includes the latitude information of each monitoring site}
 
-\item{estimate_interval}{continue numeric vector, represents the time-interval to estimate}
+\item{pollutant_site_lon}{character, varibale name in pollutant_data, includes the longtitude information of each monitoring site}
 
-\item{pollutant_site}{character,varibale name which includes the site infromation}
+\item{pollutant_name}{vactor, pollutant name in the pollutant_data need to be estimated}
 
-\item{krige_model:}{?krige}
+\item{estimate_interval}{continue numeric vector, the estimation period, for example: 0:30, for each individual we estimate the environment exposure ranging from the exposure_date to exposure_date + 30 days}
 
-\item{nmax:}{?krige}
+\item{krige_model}{?krige}
 
-\item{krige_method:}{?krige}
+\item{nmax}{?krige}
+
+\item{krige_method}{?krige}
 }
 \value{
 a list. every dataframe in the list was with the first column representing the individual id, the remaining columns represent the exposure estimation
 in different days.
 }
 \description{
-used the envronment concentration in the individual location as the reference point to
-estimate the environmental exposure. The envionmental concentration at the refrence point was calculated
-based on the kringe method.
+Based on the kringe method, the pollutant exposure in each individual location was estimated and then assess the
+total pollutant exposure through the estimate_interval
 }
 \examples{
 \dontrun{
+library(EnvExpInd)
+data(envind)
 exposure_estimate_krige(
        individual_data = individual_data_tem,
-       individual_id = "编号",
-       exposure_date ="日期",
+       individual_id = "id",
+       exposure_date ="date",
        individual_lat ="lat",
        individual_lon ="lon",
        pollutant_data = pollutant_data_tem_idw,
@@ -57,7 +75,7 @@ exposure_estimate_krige(
        pollutant_name = c("PM10","PM2.5"),
        krige_model,
        nmax = 7,
-       krige_method = "med"
+       krige_method = "med",
        estimate_interval = c(0:30))
 }
 }

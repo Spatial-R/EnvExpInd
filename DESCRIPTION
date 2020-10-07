@@ -1,13 +1,17 @@
 Package: EnvExpInd
 Type: Package
-Title: R package to estimate the environmental exposure on the individual level
-Imports: gstat,RCurl,dplyr,stringi,sp
+Title: Environmental Exposure on the Individual Level
+Imports: gstat,RCurl,dplyr,stringi,sp,maptools
 Version: 0.1.0
-Author: Bing Zhang
-Maintainer: Bing Zhang <zhangbing4502431@outlook.com>
-Description: This package provides serveal methods to calculate the environmental exposure (air pollution or temperature) on the individual level
-URL: http://spatial-r.github.io/EnvExpInd
-License: GPL
+Depends: R(>= 3.5.0)
+Authors@R: person("Bing","Zhang", role = c("aut", "cre"), email = "zhangb269@mail2.sysu.edu.cn")
+Description: Tools for the assessment of the environmental exposure. The package provides three methods (nearest monitoring site, inverse distance weighted, ordinary kriging) to calculate the environmental exposure (air pollution or temperature) on the individual level.
+URL: https://github.com/Spatial-R/EnvExpInd
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 7.1.0
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

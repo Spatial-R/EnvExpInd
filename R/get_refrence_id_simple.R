@@ -1,8 +1,8 @@
 ##' @title  get the refrence site for every sample
-##' @param  individual_data data.frame from the geo_latlon function
-##' @param  individual_lat character,varibale includes the latitude of the idividual
-##' @param  individual_lon character,varibale includes longtitude value of the idividual
-##' @param  individual_id  character, varibale includes the unique id for each individual
+##' @param  individual_data data.frame from the geo_latlon_china function or geocode function in ggmap
+##' @param  individual_lat character, varibale name in individual_data, includes the latitude information of each idividual
+##' @param  individual_lon character, varibale name in individual_data, includes the longtitude information of each idividual
+##' @param  individual_id  character, varibale name in individual_data, includes the unique id for each individual
 ##' @param  site_data  data.frame from the geo_latlon function
 ##' @param  site_lat  character varibale includes the latitude value of the site
 ##' @param  site_lon  character varibale includes the longtitude value of the site

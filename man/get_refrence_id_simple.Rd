@@ -4,17 +4,25 @@
 \alias{get_refrence_id_simple}
 \title{get the refrence site for every sample}
 \usage{
-get_refrence_id_simple(individual_data, individual_lat, individual_lon,
-  individual_id, site_data, site_lat, site_lon, site_id)
+get_refrence_id_simple(
+  individual_data,
+  individual_lat,
+  individual_lon,
+  individual_id,
+  site_data,
+  site_lat,
+  site_lon,
+  site_id
+)
 }
 \arguments{
-\item{individual_data}{data.frame from the geo_latlon function}
+\item{individual_data}{data.frame from the geo_latlon_china function or geocode function in ggmap}
 
-\item{individual_lat}{character,varibale includes the latitude of the idividual}
+\item{individual_lat}{character, varibale name in individual_data, includes the latitude information of each idividual}
 
-\item{individual_lon}{character,varibale includes longtitude value of the idividual}
+\item{individual_lon}{character, varibale name in individual_data, includes the longtitude information of each idividual}
 
-\item{individual_id}{character, varibale includes the unique id for each individual}
+\item{individual_id}{character, varibale name in individual_data, includes the unique id for each individual}
 
 \item{site_data}{data.frame from the geo_latlon function}
 
@@ -26,6 +34,9 @@ get_refrence_id_simple(individual_data, individual_lat, individual_lon,
 }
 \value{
 refrence_id for each individual
+}
+\description{
+get the refrence site for every sample
 }
 \examples{
 \dontrun{

@@ -1,0 +1,446 @@
+---
+title: "Air pollutant exposure estimation based on the home address"
+author: "Bing Zhang"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Air pollutant exposure estimation based on the home address}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+options(rmarkdown.html_vignette.check_title = FALSE)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+It is crucial to assess the indivudal exposure of environmental factors at different exposure periods (i.e, progestation and second trimester), so as to accurately assess how the air pollutant exposure work on the certain outcomes (i.e, birth defect and preterm labor). Compared with the traditional way which only uses the average concnetration among the whole monitoring sites, the `EnvExpInd` package  taken the **spatial heterogeneity** into consideration and obtained a more accurate assessment of environmental exposure. 
+
+-------------------------------------------------------------------------------------------
+
+### Dataset
+
+Generally, three datasets including the concentration of environmental factors at each time point, individual information and the environmental monitoring sites should be prepared. Here, we take a simple example to illustrate how we can use the **EnvExpInd** packageto estimate the individual exposure of air pollutants. 
+
+- **monitoring site**: data.frame, contains the names of monitoring sites and their corresponding address. 
+- **air pollution data**: the concentration of environmental factors at each time point.
+- **individual information**: detailed information of address and the start time to be estimated.
+
+-------------------------------------------------------------------------------------------
+
+### Procedure
+
+1.  Obtain the longitude and latitude information for each individual as well as the monitoring sites according to their detailed address.
+2.  Calculate the matched monitoring site (nearest monitoring site used as the matched site) or the corresponding spatial position after the interpolation.
+3.  Based on the the time point of outcome and the assessment period, we can easily get the individual exposure in the targte period by re-running the second step.  
+
+-------------------------------------------------------------------------------------------
+
+### Install
+
+The package hasn't been published in R-Project，whereas, you can install it from the github (Spatial-R):
+
+    devtools::install_github("Spatial-R/EnvExpInd")
+
+-------------------------------------------------------------------------------------------
+
+#### Load the dataset
+
+After you have installed the **EnvExpInd** package, you can load the "envid" dataset in the package using the following codes: `data("envind)`. The envid dataset contains the information about the air pollutants, montoring site and the detailed information for each patient. In order to omit the potential error in the following procedure, you should make sure that the variables regarding date information in the air pollutants and patient dataset should be formated as "date/time". 
+
+     library(sp);
+     library(gstat);
+     library(EnvExpInd)
+     data("envind")
+     individual_data_tem$date <- as.Date(individual_data_tem$date);
+     pollutant_data$date <- as.Date(pollutant_data$date)
+     pollutant_data_tem <- pollutant_data
+    
+    
+The **individual\_data\_tem** contains at least three variables: **id** (unique ID for the each patient), **date** (date of outcome occured, formated as "2014-10-20") and **address** (detailed address for each individual).
+
+The **pollutant\_data** also contains at least three variables: **date** (date of montoring, formated as "2014-10-20"), **site_name** (the name for the monitoring site) and concentration of certain air pollutants.
+(**Notes**: There were some missing values in the pullutant dataset, therefore, you should make some interpolations to fill with)
+
+The **site\_data** contains at least two variables: **site_name** (the name for the monitoring site) and **address** (detailed address for the montoring site).
+
+-------------------------------------------------------------------------------------------
+
+### Analysis
+
+#### Longitude and latitude information
+
+There are several ways to get the longitude and latitude information based on the detailed address: Baidu, Google, and Amap. For the user in China, you can use the API of [Baidu](http://lbsyun.baidu.com/index.php?title=webapi/guide/webservice-geocoding) and [Amap](https://lbs.amap.com/api/webservice/guide/api/georegeo) to transform the address into the longitude and latitude. Here, we provide a simple function **get\_latlon\_china** to help the uses to realise the process.  
+(Note: Daily call limitation for each api_key was 6000)
+
+    site_data <- get_latlon_china(data = site_data, add_var = "address", api_key = "your key")
+    individual_data_tem <- get_latlon_china(data = individual_data_tem, add_var = "address", api_key = "your key")
+
+#### Exposure estimation
+
+Generally, there were two ways to calculate the environmental exposure on the individual level: simple or complicated. The simple one here is that we choose the air pollutant concentration in the nearest monitoring site as the reference for each individual; however, for the complicated one, we use the spatial interpolation method (i.e, **inverse distance weighted**, **Ordinary kriging**, and **land use regression**) to assess the air pollutant concentration. In the current version of EnvExpInd, there are only two spatial interpolation methods available: inverse distance weighted and kriging.
+
+1. Simple one
+
+Two improtant functions can be used to realised this aim: the function `get_refrence_id_simple` and  `expoure_estimate_simple`. The function `get_refrence_id_simple` is used to match the nearest monitoring site for each individual. There were eight arugments (four arugments for the individual dataset and four arugments for the monitoring sites) that we should define firstly: 
+
+- `individual_data`: dataframe with at least three variables: longitude, latitude and unique id.  
+- `individual_lat`: column name of latitude for each individual.
+- `individual_lon`: column name of longitude for each individual.
+- `individual_id`:  column name of unique id for each individual. 
+- `site_data`: dataframe with at least three variables: longitude, latitude and unique id.
+- `site_lat`: column name of latitude for each monitoring site.
+- `site_lon`: column name of longitude for each monitoring site.
+- `site_id`:  column name of unique id for each monitoring site. 
+
+The codes are as followed: 
+
+    individual_data_tem$refrence_id <- get_refrence_id_simple(individual_data = individual_data_tem, 
+                                                          individual_lat = "lat",
+                                                          individual_lon ="lon",
+                                                          individual_id = "id",
+                                                          site_data = site_data,
+                                                          site_lat = "lat",
+                                                          site_lon = "lon",
+                                                          site_id = "site")
+    kable(head(individual_data_tem[,-3])) 
+
+After that, we can use the function `expoure_estimate_simple` to get the exposure during the study period: 
+
+    pollutant_data_tem$date <- as.Date(pollutant_data_tem$date)
+    individual_data_tem$date <- as.Date(individual_data_tem$date)
+    exposure.simple <- expoure_estimate_simple(individual_data = individual_data_tem,
+                                               individual_id = "id",
+                                               refrence_id = "refrence_id",
+                                               exposure_date = "date",
+                                               pollutant_data = pollutant_data_tem,
+                                               pollutant_site = "site.name",
+                                               pollutant_date = "date",
+                                               pollutant_name = c("PM10","SO2"),
+                                               estimate_interval = c(0:1))
+
+    kable(head(exposure.simple$PM10),digits= 1)   #### PM10 estimation
+
+<table>
+<thead>
+<tr class="header">
+<th align="left">id</th>
+<th align="left">day.0</th>
+<th align="left">day.1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2564</td>
+<td align="left">202</td>
+<td align="left">206</td>
+</tr>
+<tr class="even">
+<td align="left">2563</td>
+<td align="left">206</td>
+<td align="left">220</td>
+</tr>
+<tr class="odd">
+<td align="left">2562</td>
+<td align="left">206</td>
+<td align="left">220</td>
+</tr>
+<tr class="even">
+<td align="left">2561</td>
+<td align="left">230</td>
+<td align="left">200</td>
+</tr>
+<tr class="odd">
+<td align="left">2560</td>
+<td align="left">212</td>
+<td align="left">146</td>
+</tr>
+<tr class="even">
+<td align="left">2559</td>
+<td align="left">176</td>
+<td align="left">136</td>
+</tr>
+</tbody>
+</table>
+
+    kable(head(exposure.simple$SO2),digits= 1)    #### SO2 estimation
+
+<table>
+<thead>
+<tr class="header">
+<th align="left">id</th>
+<th align="left">day.0</th>
+<th align="left">day.1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2564</td>
+<td align="left">27</td>
+<td align="left">47</td>
+</tr>
+<tr class="even">
+<td align="left">2563</td>
+<td align="left">47</td>
+<td align="left">60</td>
+</tr>
+<tr class="odd">
+<td align="left">2562</td>
+<td align="left">47</td>
+<td align="left">60</td>
+</tr>
+<tr class="even">
+<td align="left">2561</td>
+<td align="left">82</td>
+<td align="left">52</td>
+</tr>
+<tr class="odd">
+<td align="left">2560</td>
+<td align="left">54</td>
+<td align="left">72</td>
+</tr>
+<tr class="even">
+<td align="left">2559</td>
+<td align="left">44</td>
+<td align="left">52</td>
+</tr>
+</tbody>
+</table>
+
+------------------------------------------------------------------------
+
+2. Inverse distance weighted
+
+The spatial interpolation method can be realised using the **gstat** package. In the EnvExpInd package, we can use `exposure_estimate_idw` function to estimate the individual level exposure based on the inverse distance weighted method.
+
+    pollutant_data_tem_idw <- merge(pollutant_data_tem,site_data[,c(1,3,4)],by.x = "site.name",by.y = "site", all.x = T)
+
+    exposure.idw <- exposure_estimate_idw(individual_data = individual_data_tem,
+                                          individual_id = "id",
+                                          exposure_date ="date",
+                                          individual_lat ="lat",
+                                          individual_lon ="lon",
+                                          pollutant_data = pollutant_data_tem_idw,
+                                          pollutant_date = "date",
+                                          pollutant_site_lat = "lat",
+                                          pollutant_site_lon = "lon",
+                                          pollutant_name = c("PM10","SO2"),
+                                          estimate_interval = c(0:1))  
+
+   
+    kable(head(exposure.idw$PM10),digits = 1)   #### PM10 estimation
+
+<table>
+<thead>
+<tr class="header">
+<th align="right">id</th>
+<th align="right">day.0</th>
+<th align="right">day.1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">2564</td>
+<td align="right">196.1</td>
+<td align="right">198.6</td>
+</tr>
+<tr class="even">
+<td align="right">2563</td>
+<td align="right">220.2</td>
+<td align="right">198.6</td>
+</tr>
+<tr class="odd">
+<td align="right">2562</td>
+<td align="right">227.0</td>
+<td align="right">194.7</td>
+</tr>
+<tr class="even">
+<td align="right">2561</td>
+<td align="right">191.0</td>
+<td align="right">224.1</td>
+</tr>
+<tr class="odd">
+<td align="right">2560</td>
+<td align="right">141.6</td>
+<td align="right">186.6</td>
+</tr>
+<tr class="even">
+<td align="right">2559</td>
+<td align="right">136.1</td>
+<td align="right">176.1</td>
+</tr>
+</tbody>
+</table>
+
+    kable(head(exposure.idw$SO2),digits= 1)   #### SO2 estimation
+
+<table>
+<thead>
+<tr class="header">
+<th align="right">id</th>
+<th align="right">day.0</th>
+<th align="right">day.1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">2564</td>
+<td align="right">52.9</td>
+<td align="right">33.1</td>
+</tr>
+<tr class="even">
+<td align="right">2563</td>
+<td align="right">72.1</td>
+<td align="right">53.0</td>
+</tr>
+<tr class="odd">
+<td align="right">2562</td>
+<td align="right">73.3</td>
+<td align="right">53.2</td>
+</tr>
+<tr class="even">
+<td align="right">2561</td>
+<td align="right">50.8</td>
+<td align="right">81.0</td>
+</tr>
+<tr class="odd">
+<td align="right">2560</td>
+<td align="right">58.7</td>
+<td align="right">44.5</td>
+</tr>
+<tr class="even">
+<td align="right">2559</td>
+<td align="right">51.9</td>
+<td align="right">44.0</td>
+</tr>
+</tbody>
+</table>
+
+3. Ordinary kriging
+
+Ordinary kriging to estimate the environmental exposure can be realised by the function `exposure_estimate_krige`. Generally, you should define the semivariogram firstly.
+
+    example.date <- range(pollutant_data_tem$date)[2]
+    test.pollutant <- filter(pollutant_data_tem,date == example.date)[,c(2,5)]
+    test.pollutant <- merge(test.pollutant,site_data,by.x = "site.name",by.y = "site")
+    coordinates(test.pollutant) <- ~lat + lon
+    m <- fit.variogram(variogram(PM10~1, test.pollutant), vgm(1, "Sph", 200, 1))
+
+    estimate.krige <- exposure_estimate_krige(individual_data = individual_data_tem,
+                                         individual_id = "id",
+                                         exposure_date = "date",
+                                         individual_lat = "lat",
+                                         individual_lon = "lon",
+                                         pollutant_data = pollutant_data_tem_idw,
+                                         pollutant_date = "date",
+                                         pollutant_site_lat = "lat",
+                                         pollutant_site_lon = "lon",
+                                         pollutant_name = c("PM10","SO2"),
+                                         estimate_interval = c(0:1),
+                                         krige_model = m,
+                                         nmax = 7,
+                                         krige_method = "med")
+
+
+    kable(head(estimate.krige$PM10),digits = 1)   #### PM10 estimation
+
+<table>
+<thead>
+<tr class="header">
+<th align="right">id</th>
+<th align="right">day.0</th>
+<th align="right">day.1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">2564</td>
+<td align="right">194</td>
+<td align="right">198</td>
+</tr>
+<tr class="even">
+<td align="right">2563</td>
+<td align="right">220</td>
+<td align="right">198</td>
+</tr>
+<tr class="odd">
+<td align="right">2562</td>
+<td align="right">220</td>
+<td align="right">194</td>
+</tr>
+<tr class="even">
+<td align="right">2561</td>
+<td align="right">192</td>
+<td align="right">220</td>
+</tr>
+<tr class="odd">
+<td align="right">2560</td>
+<td align="right">136</td>
+<td align="right">178</td>
+</tr>
+<tr class="even">
+<td align="right">2559</td>
+<td align="right">136</td>
+<td align="right">178</td>
+</tr>
+</tbody>
+</table>
+
+    kable(head(estimate.krige$SO2),digits = 1)   #### SO2 estimation
+
+<table>
+<thead>
+<tr class="header">
+<th align="right">id</th>
+<th align="right">day.0</th>
+<th align="right">day.1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">2564</td>
+<td align="right">58.0</td>
+<td align="right">35.0</td>
+</tr>
+<tr class="even">
+<td align="right">2563</td>
+<td align="right">82.0</td>
+<td align="right">58.0</td>
+</tr>
+<tr class="odd">
+<td align="right">2562</td>
+<td align="right">80.0</td>
+<td align="right">58.0</td>
+</tr>
+<tr class="even">
+<td align="right">2561</td>
+<td align="right">46.7</td>
+<td align="right">82.0</td>
+</tr>
+<tr class="odd">
+<td align="right">2560</td>
+<td align="right">52.0</td>
+<td align="right">46.7</td>
+</tr>
+<tr class="even">
+<td align="right">2559</td>
+<td align="right">52.0</td>
+<td align="right">46.7</td>
+</tr>
+</tbody>
+</table>
+
+
+### References
+
+Li Wu, Lei Jin, Tingming Shi, Bing Zhang, et.al. Association between ambient particulate matter exposure and semen quality in Wuhan, China, Environment International, 98, 2017,219-228.
+
+Tao Liu, Min Kang, Bing Zhang, et.al. Independent and interactive effects of ambient temperature and absolute humidity on the risks of avian influenza A(H7N9) infection in China. Science of The Total Environment, 2018, 619-620: 1358-1365.
+
+### BugReports
+
+**EnvExpInd** is a package to estimate the environmental exposure on the individual level. If you have found any bugs, please set up an issue [here](https://github.com/Spatial-R/EnvExpInd/issues).
+

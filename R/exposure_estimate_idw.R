@@ -1,17 +1,26 @@
-###' @title estimate the environmental exposure using the inverse distance weighting method
-###' @description used the envronment concentration in the individual location as the reference point to
-###' estimate the environmental exposure. The envionmental concentration at the refrence point was calculated
+###' @title estimate the pollutant exposure using the inverse distance weighting method
+###' @description used the pollutant concentration in the individual location as the reference point to
+###' estimate the environmental exposure. The pollutant concentration at the refrence point was calculated
 ###' based on the inverse distance weighting method.
-###' @param individual_data data.frame includes the refrence id, individual_id and exposure_date
-###' @param individual_id character, represents the unique id for each individual
-###' @param exposure_date character, represents the date information
-###' @param estimate_interval continue numeric vector, represents the time-interval to estimate
-###' @param pollutant_data data.frame which indludes the pollutant and site informatin
-###' @param pollutant_site character,varibale name which includes the site infromation
-###' @param pollutant_date character,varibale name represents the date infromation for the air pollutant dataset
-###' @param pollutant_name character, ollutant name in the pollutant_data need to be estimated
+###' @param individual_data data.frame, contains the refrence id, individual_id and exposure_date
+###' @param individual_id character,varibale name in individual_data, represents the unique id for each individual
+###' @param individual_lat character, varibale name in individual_data, represents the latitude information of each idividual
+###' @param individual_lon character, varibale name in individual_data, represents the longtitude information of each idividual
+###' @param exposure_date character, varibale name in individual_data, which represents the start date to estimate the environment exposure
+###' @param estimate_interval continue numeric vector, the estimation period, for example: 0:30, for each individual we estimate the environment exposure ranging from the exposure_date to exposure_date + 30 days
+###' @param pollutant_data data.frame, contains the pollutant and site informatin. One column represents the site information and other columns represent the concentration of pollutants
+###' @param pollutant_site_lat character, varibale name in pollutant_data, includes the latitude information of each monitoring site
+###' @param pollutant_site_lon character, varibale name in pollutant_data, includes the longtitude information of each monitoring site
+###' @param pollutant_date character, varibale name represents the date infromation for the air pollutant dataset
+###' @param pollutant_name vactor, pollutant name in the pollutant_data, which represent the name of the target pollutants to be estimated
+###' @export
+###' @import dplyr
+###' @import maptools
+###' @import gstat
 ###' @examples
 ###' \dontrun{
+###' library(EnvExpInd)
+###' data(envind)
 ###' exposure_estimate_idw(
 ###' individual_data = individual_data_tem,
 ###' individual_id = "id",
@@ -27,6 +36,7 @@
 ###' }
 ###' @return a list. every dataframe in the list was with the first column representing the individual id, the remaining columns represent the exposure estimation
 ###' in different days.
+###' @export
 ###' @author Bing Zhang, \url{https://github.com/Spatial-R/EnvExpInd}
 
 
@@ -42,7 +52,25 @@ exposure_estimate_idw <- function(individual_data,
                                   pollutant_name = c("pm10","so2"),
                                   estimate_interval = c(0:30)){
 
-  individual_data <- individual_data[,c(individual_id,exposure_date,individual_lat,individual_lon)]
+  var_check_ind <- which(is.na(match(c(individual_id,individual_lat,
+                                       individual_lon,exposure_date),names(individual_data))))
+  var_check_polt <- which(is.na(match(c(pollutant_date,pollutant_name[i],
+                                        pollutant_site_lat,pollutant_site_lon),names(pollutant_data))))
+
+  if(length(var_check_ind) > 0){
+    miss_var_ind <- paste(c(individual_id,individual_lat,
+                            individual_lon,exposure_date)[var_check_ind],collapse = ",")
+    stop(print(paste0("The names of variables: ",miss_var_ind," were not in the individual_data")))
+  }
+
+  if(length(var_check_polt) > 0){
+    miss_var_polt <- paste(c(pollutant_date,pollutant_name[i],
+                             pollutant_site_lat,pollutant_site_lon)[var_check_polt],collapse = ",")
+    stop(print(paste0("The names of variables: ",miss_var_polt," were not in the pollutant_data")))
+  }
+
+  target_col <- match(c(individual_id,exposure_date,individual_lon,exposure_date),names(individual_data))
+  individual_data <- individual_data[,target_col]
   names(individual_data) <- c("individual_id","exposure_date","individual_lat","individual_lon")
 
   pollutant.num <- length(pollutant_name)
@@ -64,27 +92,27 @@ exposure_estimate_idw <- function(individual_data,
 
     tem.list <- lapply(1:nrow(individual_data),function(data.id){   ### loop for different individual
       idividual.tem <- individual_data[data.id,c("individual_lat","individual_lon")]
-      coordinates(idividual.tem) =~ individual_lat + individual_lon
+      sp::coordinates(idividual.tem) =~ individual_lat + individual_lon
       date.target   <- individual_data[data.id,"exposure_date"] + estimate_interval
       date.length   <- length(date.target); pollutant.list <- list()
 
       for (d in (1:date.length)){    ### loop for different date
         idw.data.ori <- pollutant.type[pollutant.type$pollutant_date == (date.target[d]),]
         if(!nrow(idw.data.ori) == 0){
-          coordinates(idw.data.ori) =~ pollutant_site_lat + pollutant_site_lon
-          pm25.tem = data.frame(tem = idw(pollutant~1,idw.data.ori,idividual.tem)@data[,-2])
+          sp::coordinates(idw.data.ori) =~ pollutant_site_lat + pollutant_site_lon
+          pm25.tem = data.frame(tem = gstat::idw(pollutant~1,idw.data.ori,idividual.tem)@data[,-2])
           pollutant.list[[d]] <- pm25.tem
         } else{
           pollutant.list[[d]] <- NA
         }
       }
-      pollutant.result <- bind_cols(pollutant.list)
+      pollutant.result <- dplyr::bind_cols(pollutant.list)
       names(pollutant.result) <- paste("day.",estimate_interval,sep = "")
       pollutant.result$id <-  individual_data[data.id,"individual_id"]
       pollutant.result <- pollutant.result[,c("id", paste("day.",estimate_interval,sep = ""))]
       return(pollutant.result)
     })
-    result.final[[i]] <- bind_rows(tem.list);
+    result.final[[i]] <- dplyr::bind_rows(tem.list);
   }
   names(result.final) <- pollutant_name;
   return(result.final)
