@@ -41,38 +41,44 @@ expoure_estimate_simple <- function(individual_data,
                                     pollutant_name = c("pm10","so2"),
                                     estimate_interval){
 
-  var_check_ind <- which(is.na(match(c(individual_id,refrence_id,exposure_date),names(individual_data))))
-  var_check_polt <- which(is.na(match(c(pollutant_site,pollutant_date,pollutant_name),names(pollutant_data))))
+  pollutant_data <- data.frame(pollutant_data)
+  individual_data <- data.frame(pollutant_data)
+  
+  var_check_ind <-  match(c(individual_id,refrence_id,exposure_date),names(individual_data))
+  var_check_polt <- match(c(pollutant_site,pollutant_date,pollutant_name),names(pollutant_data))
 
-  if(length(var_check_ind) > 0){
+  if(length(which(is.na(var_check_ind))) > 0){
     miss_var_ind <- paste(c(individual_id,refrence_id,exposure_date)[var_check_ind],collapse = ",")
     stop(print(paste0("The names of variables: ",miss_var_ind," were not in the individual_data")))
   }
 
-  if(length(var_check_polt) > 0){
+  if(length(which(is.na(var_check_polt))) > 0){
     miss_var_polt <- paste(c(pollutant_site,pollutant_date,pollutant_name)[var_check_polt],collapse = ",")
     stop(print(paste0("The names of variables: ",miss_var_polt," were not in the pollutant_data")))
   }
 
-  target_col <- match(c(individual_id,refrence_id,exposure_date),names(individual_data))
-  individual_data <- individual_data[,target_col]
+  individual_data <- individual_data[,var_check_ind]
   names(individual_data) <- c("individual_id","refrence_id","exposure_date")
-
+  
+  pollutant_data <- pollutant_data[,var_check_polt]
+  names(pollutant_data) <- c("pollutant_site","pollutant_date",pollutant_name)
+  
   pollutant.num <- length(pollutant_name)
-  left.date <- min(individual_data[,"exposure_date"]);
-  right.date <- max(individual_data[,"exposure_date"])
+  left.date <- min(individual_data$exposure_date);
+  right.date <- max(individual_data$exposure_date)
   date.check <- c(left.date + estimate_interval, right.date + estimate_interval)
 
-  if (!all(date.check %in% (pollutant_data[,pollutant_date]))){
+  if (!all(date.check %in% (pollutant_data$pollutant_date))){
     warning("the date to esitmate is not fully in the pollutant dataset")
   }
 
   result.final <- list()
 
   for (i in c(1:pollutant.num)){
-    pollutant_col <- match(c(pollutant_site,pollutant_date,pollutant_name[i]),names(pollutant_data))
-    pollutant.type <- pollutant_data[,pollutant_col]
-    names(pollutant.type) <- c("pollutant_site","pollutant_date","pollutant")
+    
+    pollutant_col <- match(pollutant_name[i],names(pollutant_data))
+    names(pollutant_data)[pollutant_col] <- c("pollutant")
+    
     tem.list <- lapply(1:nrow(individual_data),function(data.id){
       idividual.tem <- individual_data[data.id,]
       date.target   <- idividual.tem[1,"exposure_date"] + estimate_interval

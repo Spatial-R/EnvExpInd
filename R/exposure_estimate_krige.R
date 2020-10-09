@@ -58,45 +58,46 @@ exposure_estimate_krige  <- function(individual_data,
                                      nmax = 7,
                                      krige_method = "med"){
 
-  var_check_ind <- which(is.na(match(c(individual_id,individual_lat,
-                                       individual_lon,exposure_date),names(individual_data))))
-  var_check_polt <- which(is.na(match(c(pollutant_date,pollutant_name[i],
-                                        pollutant_site_lat,pollutant_site_lon),names(pollutant_data))))
+  pollutant_data <- data.frame(pollutant_data)
+  individual_data <- data.frame(pollutant_data)
+  
+  var_check_ind <- match(c(individual_id,individual_lat,
+                                       individual_lon,exposure_date),names(individual_data))
+  var_check_polt <- match(c(pollutant_date,pollutant_name,
+                                        pollutant_site_lat,pollutant_site_lon),names(pollutant_data))
 
-  if(length(var_check_ind) > 0){
+  if(length(which(is.na(var_check_ind))) > 0){
     miss_var_ind <- paste(c(individual_id,individual_lat,
                             individual_lon,exposure_date)[var_check_ind],collapse = ",")
     stop(print(paste0("The names of variables: ",miss_var_ind," were not in the individual_data")))
   }
 
-  if(length(var_check_polt) > 0){
-    miss_var_polt <- paste(c(pollutant_date,pollutant_name[i],
+  if(length(which(is.na(var_check_polt))) > 0){
+    miss_var_polt <- paste(c(pollutant_date,pollutant_name,
                              pollutant_site_lat,pollutant_site_lon)[var_check_polt],collapse = ",")
     stop(print(paste0("The names of variables: ",miss_var_polt," were not in the pollutant_data")))
   }
 
-  target_col <- match(c(individual_id,exposure_date,individual_lon,exposure_date),names(individual_data))
-  individual_data <- individual_data[,target_col]
+  individual_data <- individual_data[,var_check_ind]
   names(individual_data) <- c("individual_id","exposure_date","individual_lat","individual_lon")
-
+  
+  pollutant_data <- pollutant_data[,var_check_polt]
+  names(pollutant_data) <- c("pollutant_date",pollutant_name,"pollutant_site_lat","pollutant_site_lon")
+  
   pollutant.num <- length(pollutant_name)
-  left.date <- min(individual_data[,"exposure_date"]);
-  right.date <- max(individual_data[,"exposure_date"])
-  date.check <- c(left.date + estimate_interval, right.date + estimate_interval)
+  left.date <- min(individual_data$exposure_date);
+  right.date <- max(individual_data$exposure_date)
 
-  if (!all(date.check %in% (pollutant_data[,pollutant_date]))){
-    warning("the date to esitmate is not fully in the pollutant dataset")
-    stop("the date to esitmate is not fully in the pollutant dataset")
+  if (!all(date.check %in% (pollutant_data$pollutant_date))){
+    stop(paste0("the date to esitmate is not fully in the pollutant dataset"))
   }
 
   result.final <- list()
 
   for (i in c(1:pollutant.num)){  ### loop for different pollutants
 
-    pollutant_col <- match(c(c(pollutant_date,pollutant_name[i],
-                               pollutant_site_lat,pollutant_site_lon)),names(pollutant_data))
-    pollutant.type <- pollutant_data[,pollutant_col]
-    names(pollutant.type) <- c("pollutant_date","pollutant","pollutant_site_lat","pollutant_site_lon")
+    pollutant_col <- match(pollutant_name[i],names(pollutant_data))
+    names(pollutant_data)[pollutant_col] <- c("pollutant")
 
     tem.list <- lapply(1:nrow(individual_data),function(data.id){   ### loop for different individual
       idividual.tem <- individual_data[data.id,c("individual_lat","individual_lon")]
