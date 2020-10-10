@@ -53,13 +53,13 @@ exposure_estimate_idw <- function(individual_data,
                                   estimate_interval = c(0:30)){
 
   pollutant_data <- data.frame(pollutant_data)
-  individual_data <- data.frame(pollutant_data)
-  
-  var_check_ind <- match(c(individual_id,individual_lat,
-                                       individual_lon,exposure_date),names(individual_data))
-  
-  var_check_polt <- match(c(pollutant_date,pollutant_name,
-                                        pollutant_site_lat,pollutant_site_lon),names(pollutant_data))
+  individual_data <- data.frame(individual_data)
+
+  var_check_ind <- match(c(individual_id,individual_lat,individual_lon,exposure_date),
+                         names(individual_data))
+
+  var_check_polt <- match(c(pollutant_date,pollutant_name,pollutant_site_lat,pollutant_site_lon),
+                          names(pollutant_data))
 
   if(length(which(is.na(var_check_ind))) > 0){
     miss_var_ind <- paste(c(individual_id,individual_lat,
@@ -74,17 +74,17 @@ exposure_estimate_idw <- function(individual_data,
   }
 
   individual_data <- individual_data[,var_check_ind]
-  names(individual_data) <- c("individual_id","exposure_date","individual_lat","individual_lon")
+  names(individual_data) <- c("individual_id","individual_lat","individual_lon","exposure_date")
 
   pollutant_data <- pollutant_data[,var_check_polt]
   names(pollutant_data) <- c("pollutant_date",pollutant_name,"pollutant_site_lat","pollutant_site_lon")
-  
+
   pollutant.num <- length(pollutant_name)
   left.date <- min(individual_data$exposure_date);
   right.date <- max(individual_data$exposure_date)
   date.check <- c(left.date + estimate_interval, right.date + estimate_interval)
 
-  
+
   if (!all(date.check %in% (pollutant_data$pollutant_date))){
     stop(print("the date to esitmate is not fully in the pollutant dataset"))
   }
@@ -92,8 +92,10 @@ exposure_estimate_idw <- function(individual_data,
   result.final <- list()
 
   for (i in c(1:pollutant.num)){  ### loop for different pollutants
-    pollutant_col <- match(pollutant_name[i],names(pollutant_data))
-    names(pollutant_data)[pollutant_col] <- c("pollutant")
+    pollutant.type <- pollutant_data
+    pollutant_col <- match(pollutant_name[i],names(pollutant.type))
+    names(pollutant.type)[pollutant_col] <- c("pollutant")
+
     tem.list <- lapply(1:nrow(individual_data),function(data.id){   ### loop for different individual
       idividual.tem <- individual_data[data.id,c("individual_lat","individual_lon")]
       sp::coordinates(idividual.tem) =~ individual_lat + individual_lon

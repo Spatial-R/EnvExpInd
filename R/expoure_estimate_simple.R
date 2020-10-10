@@ -42,8 +42,8 @@ expoure_estimate_simple <- function(individual_data,
                                     estimate_interval){
 
   pollutant_data <- data.frame(pollutant_data)
-  individual_data <- data.frame(pollutant_data)
-  
+  individual_data <- data.frame(individual_data)
+
   var_check_ind <-  match(c(individual_id,refrence_id,exposure_date),names(individual_data))
   var_check_polt <- match(c(pollutant_site,pollutant_date,pollutant_name),names(pollutant_data))
 
@@ -59,10 +59,10 @@ expoure_estimate_simple <- function(individual_data,
 
   individual_data <- individual_data[,var_check_ind]
   names(individual_data) <- c("individual_id","refrence_id","exposure_date")
-  
+
   pollutant_data <- pollutant_data[,var_check_polt]
   names(pollutant_data) <- c("pollutant_site","pollutant_date",pollutant_name)
-  
+
   pollutant.num <- length(pollutant_name)
   left.date <- min(individual_data$exposure_date);
   right.date <- max(individual_data$exposure_date)
@@ -75,10 +75,11 @@ expoure_estimate_simple <- function(individual_data,
   result.final <- list()
 
   for (i in c(1:pollutant.num)){
-    
-    pollutant_col <- match(pollutant_name[i],names(pollutant_data))
-    names(pollutant_data)[pollutant_col] <- c("pollutant")
-    
+
+    pollutant.type <- pollutant_data
+    pollutant_col <- match(pollutant_name[i],names(pollutant.type))
+    names(pollutant.type)[pollutant_col] <- c("pollutant")
+
     tem.list <- lapply(1:nrow(individual_data),function(data.id){
       idividual.tem <- individual_data[data.id,]
       date.target   <- idividual.tem[1,"exposure_date"] + estimate_interval
