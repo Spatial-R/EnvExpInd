@@ -4,7 +4,7 @@
 If you have found any bugs, please set up an issue [here](https://github.com/Spatial-R/EnvExpInd/issues).
 
 ## Installation
-devtools::install_github("Spatial-R/EnvExpInd/")
+devtools::install_github("Spatial-R/EnvExpInd")
 
 
 ## Published Paper
