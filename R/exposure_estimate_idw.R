@@ -1,5 +1,5 @@
-###' @title estimate the pollutant exposure using the inverse distance weighting method
-###' @description used the pollutant concentration in the individual location as the reference point to
+###' @title Estimate the pollutant exposure using the inverse distance weighting method
+###' @description Used the pollutant concentration in the individual location as the reference point to
 ###' estimate the environmental exposure. The pollutant concentration at the refrence point was calculated
 ###' based on the inverse distance weighting method.
 ###' @param individual_data data.frame, contains the refrence id, individual_id and exposure_date
@@ -12,30 +12,32 @@
 ###' @param pollutant_site_lat character, varibale name in pollutant_data, includes the latitude information of each monitoring site
 ###' @param pollutant_site_lon character, varibale name in pollutant_data, includes the longtitude information of each monitoring site
 ###' @param pollutant_date character, varibale name represents the date infromation for the air pollutant dataset
-###' @param pollutant_name vactor, pollutant name in the pollutant_data, which represent the name of the target pollutants to be estimated
+###' @param pollutant_name vector, pollutant name in the pollutant_data, which represent the name of the target pollutants to be estimated
 ###' @export
 ###' @import dplyr
 ###' @import maptools
 ###' @import gstat
 ###' @examples
-###' \dontrun{
 ###' library(EnvExpInd)
-###' data(envind)
+###' individual_data$date <- as.Date(individual_data$date)
+###' pollutant_data$date <- as.Date(pollutant_data$date)
+###' pollutant_data_full <- timeseries_imput(data= pollutant_data,date_var = "date",
+###' site_var = "site.name",imput_col = 3:8)
+###' pollutant_data_tem <- merge(pollutant_data_full,site_data,by.x = "site.name",by.y = "site")
 ###' exposure_estimate_idw(
-###' individual_data = individual_data_tem,
-###' individual_id = "id",
-###' exposure_date ="date",
-###' individual_lat ="lat",
-###' individual_lon ="lon",
-###' pollutant_data = pollutant_data_tem_idw,
-###' pollutant_date = "date",
-###' pollutant_site_lat = "lat",
-###' pollutant_site_lon = "lon",
-###' pollutant_name = c("PM10","PM2.5"),
-###' estimate_interval = c(0:30))
-###' }
-###' @return a list. every dataframe in the list was with the first column representing the individual id, the remaining columns represent the exposure estimation
-###' in different days.
+###'    individual_data = individual_data,
+###'    individual_id = "id",
+###'    exposure_date ="date",
+###'    individual_lat ="lat",
+###'    individual_lon ="lon",
+###'    pollutant_data = pollutant_data_tem,
+###'    pollutant_date = "date",
+###'    pollutant_site_lat = "lat",
+###'    pollutant_site_lon = "lon",
+###'    pollutant_name = c("PM10","PM2.5"),
+###'    estimate_interval = c(0:10))
+###' @return A list. For each element in the list, there is a dataframe with the first column representing the individual id, the remaining columns represent the exposure estimation
+###' in different time points.
 ###' @export
 ###' @author Bing Zhang, \url{https://github.com/Spatial-R/EnvExpInd}
 
@@ -63,13 +65,13 @@ exposure_estimate_idw <- function(individual_data,
 
   if(length(which(is.na(var_check_ind))) > 0){
     miss_var_ind <- paste(c(individual_id,individual_lat,
-                            individual_lon,exposure_date)[var_check_ind],collapse = ",")
+                            individual_lon,exposure_date)[which(is.na(var_check_ind))],collapse = ",")
     stop(print(paste0("The names of variables: ",miss_var_ind," were not in the individual_data")))
   }
 
   if(length(which(is.na(var_check_polt))) > 0){
     miss_var_polt <- paste(c(pollutant_date,pollutant_name,
-                             pollutant_site_lat,pollutant_site_lon)[var_check_polt],collapse = ",")
+                             pollutant_site_lat,pollutant_site_lon)[which(is.na(var_check_polt))],collapse = ",")
     stop(print(paste0("The names of variables: ",miss_var_polt," were not in the pollutant_data")))
   }
 
@@ -84,10 +86,10 @@ exposure_estimate_idw <- function(individual_data,
   right.date <- max(individual_data$exposure_date)
   date.check <- c(left.date + estimate_interval, right.date + estimate_interval)
 
-
   if (!all(date.check %in% (pollutant_data$pollutant_date))){
-    stop(print("the date to esitmate is not fully in the pollutant dataset"))
+    stop(print("The date you want to esitmate the exposure is not in the pollutant dataset"))
   }
+  pollutant_data <- filter(pollutant_data,pollutant_date %in% date.check)
 
   result.final <- list()
 

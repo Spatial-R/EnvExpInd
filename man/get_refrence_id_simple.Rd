@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_refrence_id_simple.R
 \name{get_refrence_id_simple}
 \alias{get_refrence_id_simple}
-\title{get the refrence site for every sample}
+\title{Match the nearing monitoring site for each individual}
 \usage{
 get_refrence_id_simple(
   individual_data,
@@ -16,7 +16,7 @@ get_refrence_id_simple(
 )
 }
 \arguments{
-\item{individual_data}{data.frame from the geo_latlon_china function or geocode function in ggmap}
+\item{individual_data}{data.frame, including three variables (individual_lat, individual_lon and individual_id)}
 
 \item{individual_lat}{character, varibale name in individual_data, includes the latitude information of each idividual}
 
@@ -24,7 +24,7 @@ get_refrence_id_simple(
 
 \item{individual_id}{character, varibale name in individual_data, includes the unique id for each individual}
 
-\item{site_data}{data.frame from the geo_latlon function}
+\item{site_data}{data.frame, including three variables (site_lat, site_lon and site_id)}
 
 \item{site_lat}{character varibale includes the latitude value of the site}
 
@@ -33,22 +33,21 @@ get_refrence_id_simple(
 \item{site_id}{character varibale includes the id for each site}
 }
 \value{
-refrence_id for each individual
+A vector, including the refrence_id for each individual
 }
 \description{
-get the refrence site for every sample
+Match the nearing monitoring site for each individual
 }
 \examples{
-\dontrun{
 get_refrence_id_simple(
-     individual_data = individual_data_tem,
+     individual_data = individual_data,
      individual_lat = "lat",
      individual_lon = "lon",
      individual_id = "id",
      site_data = site_data,
      site_lon = "lon",
+     site_lat = "lat",
      site_id = "site")
-}
 }
 \author{
 Bing Zhang, \url{https://github.com/Spatial-R/EnvExpInd}

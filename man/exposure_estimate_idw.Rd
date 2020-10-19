@@ -2,7 +2,7 @@
 % Please edit documentation in R/exposure_estimate_idw.R
 \name{exposure_estimate_idw}
 \alias{exposure_estimate_idw}
-\title{estimate the pollutant exposure using the inverse distance weighting method}
+\title{Estimate the pollutant exposure using the inverse distance weighting method}
 \usage{
 exposure_estimate_idw(
   individual_data,
@@ -37,36 +37,38 @@ exposure_estimate_idw(
 
 \item{pollutant_site_lon}{character, varibale name in pollutant_data, includes the longtitude information of each monitoring site}
 
-\item{pollutant_name}{vactor, pollutant name in the pollutant_data, which represent the name of the target pollutants to be estimated}
+\item{pollutant_name}{vector, pollutant name in the pollutant_data, which represent the name of the target pollutants to be estimated}
 
 \item{estimate_interval}{continue numeric vector, the estimation period, for example: 0:30, for each individual we estimate the environment exposure ranging from the exposure_date to exposure_date + 30 days}
 }
 \value{
-a list. every dataframe in the list was with the first column representing the individual id, the remaining columns represent the exposure estimation
-in different days.
+A list. For each element in the list, there is a dataframe with the first column representing the individual id, the remaining columns represent the exposure estimation
+in different time points.
 }
 \description{
-used the pollutant concentration in the individual location as the reference point to
+Used the pollutant concentration in the individual location as the reference point to
 estimate the environmental exposure. The pollutant concentration at the refrence point was calculated
 based on the inverse distance weighting method.
 }
 \examples{
-\dontrun{
 library(EnvExpInd)
-data(envind)
+individual_data$date <- as.Date(individual_data$date)
+pollutant_data$date <- as.Date(pollutant_data$date)
+pollutant_data_full <- timeseries_imput(data= pollutant_data,date_var = "date",
+site_var = "site.name",imput_col = 3:8)
+pollutant_data_tem <- merge(pollutant_data_full,site_data,by.x = "site.name",by.y = "site")
 exposure_estimate_idw(
-individual_data = individual_data_tem,
-individual_id = "id",
-exposure_date ="date",
-individual_lat ="lat",
-individual_lon ="lon",
-pollutant_data = pollutant_data_tem_idw,
-pollutant_date = "date",
-pollutant_site_lat = "lat",
-pollutant_site_lon = "lon",
-pollutant_name = c("PM10","PM2.5"),
-estimate_interval = c(0:30))
-}
+   individual_data = individual_data,
+   individual_id = "id",
+   exposure_date ="date",
+   individual_lat ="lat",
+   individual_lon ="lon",
+   pollutant_data = pollutant_data_tem,
+   pollutant_date = "date",
+   pollutant_site_lat = "lat",
+   pollutant_site_lon = "lon",
+   pollutant_name = c("PM10","PM2.5"),
+   estimate_interval = c(0:10))
 }
 \author{
 Bing Zhang, \url{https://github.com/Spatial-R/EnvExpInd}

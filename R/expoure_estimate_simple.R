@@ -1,31 +1,42 @@
-###' @title  assess the pollutant exposure using the simplest method
-###' @description using the nearest surveillance site as the refrence site to estimate the pollutant exposure.
-###' @param  individual_data data.frame, inludes the refrence id, indi_id and exposure_date
+###' @title  Assess the environmental exposure using the simplest method: nearest monitoring site method
+###' @description Using the nearest surveillance site as the refrence site to estimate the pollutant exposure.
+###' @param  individual_data data.frame, includes the refrence id, individual_id and exposure_date
 ###' @param  individual_id character, variable name in the individual_data, which represents the unique id for each individual
-###' @param  refrence_id character, varibale name in the individual_data, which represents the nearest surveillance site for each individual
-###' @param  exposure_date character, varibale name in the individual_data, which represents the start date to estimate the environment exposure
+###' @param  reference_id character, variable name in the individual_data, which represents the nearest surveillance site for each individual
+###' @param  exposure_date character, variable name in the individual_data, which represents the start date to estimate the environment exposure
 ###' @param  estimate_interval continue numeric vector, the estimation period, for example: 0:30, for each individual we estimate the environment exposure ranging from the exposure_date to exposure_date + 30 days
-###' @param  pollutant_data data.frame, contains the pollutant and site informatin. One column represents the site information and other columns represent the concentration of pollutants
-###' @param  pollutant_site character, varibale name in the pollutant_data, which represents the site information
-###' @param  pollutant_date character, varibale name in the pollutant_data, which represents the surveillance date for pollutant concentration
-###' @param  pollutant_name vactor, varibale names in the pollutant_data, which represent the name of the target pollutants to be estimated
+###' @param  pollutant_data data.frame, contains the pollutant and site information. One column represents the site information and other columns represent the concentration of pollutants
+###' @param  pollutant_site character, variable name in the pollutant_data, which represents the monitoring site information
+###' @param  pollutant_date character, variable name in the pollutant_data, which represents the surveillance date for pollutant concentration
+###' @param  pollutant_name vector, variable names in the pollutant_data, which represent the name of the target pollutants to be estimated
 ###' @examples
-###' \dontrun{
-###' library(EnvExpInd)
-###' data(envind)
-###' expoure_estimate_simple(
-###'    individual_data = individual_data_tem,
+###'  library(EnvExpInd)
+###'  individual_data$date <- as.Date(individual_data$date)
+###'  pollutant_data$date <- as.Date(pollutant_data$date)
+###'  pollutant_data_full <- timeseries_imput(data= pollutant_data,
+###'      date_var = "date",site_var = "site.name",imput_col = 3:8)
+###'  pollutant_data_tem <- merge(pollutant_data_full,site_data,by.x = "site.name",by.y = "site")
+###'  individual_data$reference_id <- get_reference_id_simple(
+###'    individual_data = individual_data,
+###'    individual_lat = "lat",
+###'    individual_lon = "lon",
 ###'    individual_id = "id",
-###'    refrence_id = "refrence_id",
+###'    site_data = site_data,
+###'    site_lon = "lon",
+###'    site_lat = "lat",
+###'    site_id = "site")
+###' expoure_estimate_simple(
+###'    individual_data = individual_data,
+###'    individual_id = "id",
+###'    reference_id = "reference_id",
 ###'    exposure_date = "date",
 ###'    pollutant_data = pollutant_data_tem,
 ###'    pollutant_site = "site.name",
 ###'    pollutant_date = "date",
 ###'    pollutant_name = c("PM10","PM2.5"),
-###'    estimate_interval = c(0:30))
-###'    }
-###' @return a list. every dataframe in the list was with the first column representing the individual id, the remaining columns represent the exposure estimation
-###' in different days.
+###'    estimate_interval = c(0:10))
+###' @return A list. For each element in the list, there is a dataframe with the first column representing the individual id, the remaining columns represent the exposure estimation
+###' in different time points.
 ###' @export
 ###' @import dplyr
 ###' @author Bing Zhang, \url{https://github.com/Spatial-R/EnvExpInd}
@@ -33,7 +44,7 @@
 
 expoure_estimate_simple <- function(individual_data,
                                     individual_id,
-                                    refrence_id,
+                                    reference_id,
                                     exposure_date,
                                     pollutant_data,
                                     pollutant_site = "site",
@@ -44,21 +55,21 @@ expoure_estimate_simple <- function(individual_data,
   pollutant_data <- data.frame(pollutant_data)
   individual_data <- data.frame(individual_data)
 
-  var_check_ind <-  match(c(individual_id,refrence_id,exposure_date),names(individual_data))
+  var_check_ind <-  match(c(individual_id,reference_id,exposure_date),names(individual_data))
   var_check_polt <- match(c(pollutant_site,pollutant_date,pollutant_name),names(pollutant_data))
 
   if(length(which(is.na(var_check_ind))) > 0){
-    miss_var_ind <- paste(c(individual_id,refrence_id,exposure_date)[var_check_ind],collapse = ",")
+    miss_var_ind <- paste(c(individual_id,reference_id,exposure_date)[which(is.na(var_check_ind))],collapse = ",")
     stop(print(paste0("The names of variables: ",miss_var_ind," were not in the individual_data")))
   }
 
   if(length(which(is.na(var_check_polt))) > 0){
-    miss_var_polt <- paste(c(pollutant_site,pollutant_date,pollutant_name)[var_check_polt],collapse = ",")
+    miss_var_polt <- paste(c(pollutant_site,pollutant_date,pollutant_name)[which(is.na(var_check_polt))],collapse = ",")
     stop(print(paste0("The names of variables: ",miss_var_polt," were not in the pollutant_data")))
   }
 
   individual_data <- individual_data[,var_check_ind]
-  names(individual_data) <- c("individual_id","refrence_id","exposure_date")
+  names(individual_data) <- c("individual_id","reference_id","exposure_date")
 
   pollutant_data <- pollutant_data[,var_check_polt]
   names(pollutant_data) <- c("pollutant_site","pollutant_date",pollutant_name)
@@ -69,7 +80,7 @@ expoure_estimate_simple <- function(individual_data,
   date.check <- c(left.date + estimate_interval, right.date + estimate_interval)
 
   if (!all(date.check %in% (pollutant_data$pollutant_date))){
-    warning("the date to esitmate is not fully in the pollutant dataset")
+    stop(print("The date you want to esitmate the exposure is not in the pollutant dataset"))
   }
 
   result.final <- list()
@@ -85,7 +96,7 @@ expoure_estimate_simple <- function(individual_data,
       date.target   <- idividual.tem[1,"exposure_date"] + estimate_interval
       date.length   <- length(date.target)
       pollutant.tem <- pollutant.type[(pollutant.type$pollutant_date %in% date.target) &
-                                        (pollutant.type$pollutant_site == idividual.tem$refrence_id),]
+                                        (pollutant.type$pollutant_site == idividual.tem$reference_id),]
       if(nrow(pollutant.tem) == 0){
         exposure <- c(individual_data[data.id,"individual_id"], rep("NA",length(date.target)))
       } else{

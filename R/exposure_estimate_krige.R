@@ -1,4 +1,4 @@
-###' @title assess the pollutant exposure using the kringe method
+###' @title Assess the environmental exposure using the kringe method
 ###' @description Based on the kringe method, the pollutant exposure in each individual location was estimated and then assess the
 ###' total pollutant exposure through the estimate_interval
 ###' @param individual_data data.frame, contains the refrence id, individual_id and exposure_date
@@ -11,7 +11,7 @@
 ###' @param pollutant_site_lat character, varibale name in pollutant_data, includes the latitude information of each monitoring site
 ###' @param pollutant_site_lon character, varibale name in pollutant_data, includes the longtitude information of each monitoring site
 ###' @param pollutant_date character,varibale name represents the date infromation for the air pollutant dataset
-###' @param pollutant_name vactor, pollutant name in the pollutant_data need to be estimated
+###' @param pollutant_name vector, pollutant name in the pollutant_data need to be estimated
 ###' @param krige_model ?krige
 ###' @param nmax ?krige
 ###' @param krige_method ?krige
@@ -21,25 +21,35 @@
 ###' @examples
 ###' \dontrun{
 ###' library(EnvExpInd)
-###' data(envind)
+###' library(maptools)
+###' library(gstat)
+###' individual_data$date <- as.Date(individual_data$date)
+###' pollutant_data$date <- as.Date(pollutant_data$date)
+###' pollutant_data_full <- timeseries_imput(data= pollutant_data,date_var = "date",
+###' site_var = "site.name",imput_col = 3:8)
+###' pollutant_data_tem <- merge(pollutant_data_full,site_data,by.x = "site.name",by.y = "site")
+###' test.pollutant <- pollutant_data_tem[pollutant_data_tem$date == "2014-09-20",]
+###' coordinates(test.pollutant) = ~lat + lon
+###' ########## please define the variogram in a right way  ####################
+###' m <- fit.variogram(variogram(PM10~1, test.pollutant), vgm(1, "Sph", 200, 1))
 ###' exposure_estimate_krige(
-###'        individual_data = individual_data_tem,
+###'        individual_data = individual_data,
 ###'        individual_id = "id",
 ###'        exposure_date ="date",
 ###'        individual_lat ="lat",
 ###'        individual_lon ="lon",
-###'        pollutant_data = pollutant_data_tem_idw,
+###'        pollutant_data = pollutant_data_tem,
 ###'        pollutant_date = "date",
 ###'        pollutant_site_lat = "lat",
 ###'        pollutant_site_lon = "lon",
 ###'        pollutant_name = c("PM10","PM2.5"),
-###'        krige_model,
+###'        krige_model = m,
 ###'        nmax = 7,
 ###'        krige_method = "med",
-###'        estimate_interval = c(0:30))
-###' }
-###' @return  a list. every dataframe in the list was with the first column representing the individual id, the remaining columns represent the exposure estimation
-###' in different days.
+###'        estimate_interval = c(0:10))
+###'  }
+###' @return  A list. For each element in the list, there is a dataframe with the first column representing the individual id, the remaining columns represent the exposure estimation
+###' in different time points.
 ###' @export
 ###' @author  Bing Zhang, \url{https://github.com/Spatial-R/EnvExpInd}
 
@@ -67,13 +77,13 @@ exposure_estimate_krige  <- function(individual_data,
                           names(pollutant_data))
 
   if(length(which(is.na(var_check_ind))) > 0){
-    miss_var_ind <- paste(c(individual_id,individual_lat,individual_lon,exposure_date)[var_check_ind],collapse = ",")
+    miss_var_ind <- paste(c(individual_id,individual_lat,individual_lon,exposure_date)[which(is.na(var_check_ind))],collapse = ",")
     stop(print(paste0("The names of variables: ",miss_var_ind," were not in the individual_data")))
   }
 
   if(length(which(is.na(var_check_polt))) > 0){
     miss_var_polt <- paste(c(pollutant_date,pollutant_name,
-                             pollutant_site_lat,pollutant_site_lon)[var_check_polt],collapse = ",")
+                             pollutant_site_lat,pollutant_site_lon)[which(is.na(var_check_polt))],collapse = ",")
     stop(print(paste0("The names of variables: ",miss_var_polt," were not in the pollutant_data")))
   }
 
@@ -86,9 +96,10 @@ exposure_estimate_krige  <- function(individual_data,
   pollutant.num <- length(pollutant_name)
   left.date <- min(individual_data$exposure_date);
   right.date <- max(individual_data$exposure_date)
+  date.check <- c(left.date + estimate_interval, right.date + estimate_interval)
 
   if (!all(date.check %in% (pollutant_data$pollutant_date))){
-    stop(paste0("the date to esitmate is not fully in the pollutant dataset"))
+    stop(paste0("The date you want to esitmate the exposure is not in the pollutant dataset"))
   }
 
   result.final <- list()

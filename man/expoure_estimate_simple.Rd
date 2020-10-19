@@ -2,12 +2,12 @@
 % Please edit documentation in R/expoure_estimate_simple.R
 \name{expoure_estimate_simple}
 \alias{expoure_estimate_simple}
-\title{assess the pollutant exposure using the simplest method}
+\title{Assess the environmental exposure using the simplest method: nearest monitoring site method}
 \usage{
 expoure_estimate_simple(
   individual_data,
   individual_id,
-  refrence_id,
+  reference_id,
   exposure_date,
   pollutant_data,
   pollutant_site = "site",
@@ -17,7 +17,7 @@ expoure_estimate_simple(
 )
 }
 \arguments{
-\item{individual_data}{data.frame, inludes the refrence id, indi_id and exposure_date}
+\item{individual_data}{data.frame, inludes the refrence id, individual_id and exposure_date}
 
 \item{individual_id}{character, variable name in the individual_data, which represents the unique id for each individual}
 
@@ -27,27 +27,39 @@ expoure_estimate_simple(
 
 \item{pollutant_data}{data.frame, contains the pollutant and site informatin. One column represents the site information and other columns represent the concentration of pollutants}
 
-\item{pollutant_site}{character, varibale name in the pollutant_data, which represents the site information}
+\item{pollutant_site}{character, varibale name in the pollutant_data, which represents the monitoring site information}
 
 \item{pollutant_date}{character, varibale name in the pollutant_data, which represents the surveillance date for pollutant concentration}
 
-\item{pollutant_name}{vactor, varibale names in the pollutant_data, which represent the name of the target pollutants to be estimated}
+\item{pollutant_name}{vector, varibale names in the pollutant_data, which represent the name of the target pollutants to be estimated}
 
 \item{estimate_interval}{continue numeric vector, the estimation period, for example: 0:30, for each individual we estimate the environment exposure ranging from the exposure_date to exposure_date + 30 days}
 }
 \value{
-a list. every dataframe in the list was with the first column representing the individual id, the remaining columns represent the exposure estimation
-in different days.
+A list. For each element in the list, there is a dataframe with the first column representing the individual id, the remaining columns represent the exposure estimation
+in different time points.
 }
 \description{
-using the nearest surveillance site as the refrence site to estimate the pollutant exposure.
+Using the nearest surveillance site as the refrence site to estimate the pollutant exposure.
 }
 \examples{
-\dontrun{
-library(EnvExpInd)
-data(envind)
+ library(EnvExpInd)
+ individual_data$date <- as.Date(individual_data$date)
+ pollutant_data$date <- as.Date(pollutant_data$date)
+ pollutant_data_full <- timeseries_imput(data= pollutant_data,
+     date_var = "date",site_var = "site.name",imput_col = 3:8)
+ pollutant_data_tem <- merge(pollutant_data_full,site_data,by.x = "site.name",by.y = "site")
+ individual_data$refrence_id <- get_refrence_id_simple(
+   individual_data = individual_data,
+   individual_lat = "lat",
+   individual_lon = "lon",
+   individual_id = "id",
+   site_data = site_data,
+   site_lon = "lon",
+   site_lat = "lat",
+   site_id = "site")
 expoure_estimate_simple(
-   individual_data = individual_data_tem,
+   individual_data = individual_data,
    individual_id = "id",
    refrence_id = "refrence_id",
    exposure_date = "date",
@@ -55,8 +67,7 @@ expoure_estimate_simple(
    pollutant_site = "site.name",
    pollutant_date = "date",
    pollutant_name = c("PM10","PM2.5"),
-   estimate_interval = c(0:30))
-   }
+   estimate_interval = c(0:10))
 }
 \author{
 Bing Zhang, \url{https://github.com/Spatial-R/EnvExpInd}

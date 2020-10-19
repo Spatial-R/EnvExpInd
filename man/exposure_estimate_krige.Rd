@@ -2,7 +2,7 @@
 % Please edit documentation in R/exposure_estimate_krige.R
 \name{exposure_estimate_krige}
 \alias{exposure_estimate_krige}
-\title{assess the pollutant exposure using the kringe method}
+\title{Assess the environmental exposure using the kringe method}
 \usage{
 exposure_estimate_krige(
   individual_data,
@@ -40,7 +40,7 @@ exposure_estimate_krige(
 
 \item{pollutant_site_lon}{character, varibale name in pollutant_data, includes the longtitude information of each monitoring site}
 
-\item{pollutant_name}{vactor, pollutant name in the pollutant_data need to be estimated}
+\item{pollutant_name}{vector, pollutant name in the pollutant_data need to be estimated}
 
 \item{estimate_interval}{continue numeric vector, the estimation period, for example: 0:30, for each individual we estimate the environment exposure ranging from the exposure_date to exposure_date + 30 days}
 
@@ -51,8 +51,8 @@ exposure_estimate_krige(
 \item{krige_method}{?krige}
 }
 \value{
-a list. every dataframe in the list was with the first column representing the individual id, the remaining columns represent the exposure estimation
-in different days.
+A list. For each element in the list, there is a dataframe with the first column representing the individual id, the remaining columns represent the exposure estimation
+in different time points.
 }
 \description{
 Based on the kringe method, the pollutant exposure in each individual location was estimated and then assess the
@@ -61,23 +61,33 @@ total pollutant exposure through the estimate_interval
 \examples{
 \dontrun{
 library(EnvExpInd)
-data(envind)
+library(maptools)
+library(gstat)
+individual_data$date <- as.Date(individual_data$date)
+pollutant_data$date <- as.Date(pollutant_data$date)
+pollutant_data_full <- timeseries_imput(data= pollutant_data,date_var = "date",
+site_var = "site.name",imput_col = 3:8)
+pollutant_data_tem <- merge(pollutant_data_full,site_data,by.x = "site.name",by.y = "site")
+test.pollutant <- pollutant_data_tem[pollutant_data_tem$date == "2014-09-20",]
+coordinates(test.pollutant) = ~lat + lon
+########## please define the variogram in a right way  ####################
+m <- fit.variogram(variogram(PM10~1, test.pollutant), vgm(1, "Sph", 200, 1))
 exposure_estimate_krige(
-       individual_data = individual_data_tem,
+       individual_data = individual_data,
        individual_id = "id",
        exposure_date ="date",
        individual_lat ="lat",
        individual_lon ="lon",
-       pollutant_data = pollutant_data_tem_idw,
+       pollutant_data = pollutant_data_tem,
        pollutant_date = "date",
        pollutant_site_lat = "lat",
        pollutant_site_lon = "lon",
        pollutant_name = c("PM10","PM2.5"),
-       krige_model,
+       krige_model = m,
        nmax = 7,
        krige_method = "med",
-       estimate_interval = c(0:30))
-}
+       estimate_interval = c(0:10))
+ }
 }
 \author{
 Bing Zhang, \url{https://github.com/Spatial-R/EnvExpInd}
